@@ -181,11 +181,11 @@ module Cask
 
       # Cache the os value before contains_os_specific_artifacts? refreshes the cask
       # (the refresh clears @dsl.os in generic/non-OS-specific contexts)
-      os_value = @dsl.os
+      on_system_blocks_exist = @dsl.on_system_blocks_exist?
 
       return false if contains_os_specific_artifacts?
 
-      os_value.present?
+      on_system_blocks_exist
     end
 
     sig { returns(T::Boolean) }
