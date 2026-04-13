@@ -13,4 +13,11 @@ RSpec.describe Homebrew::Cmd::Config do
       .and not_to_output.to_stderr
       .and be_a_success
   end
+
+  it "prints HOMEBREW_CASK_OPTS_REQUIRE_SHA when set", :integration_test do
+    expect { brew "config", "HOMEBREW_CASK_OPTS_REQUIRE_SHA" => "1" }
+      .to output(/HOMEBREW_CASK_OPTS_REQUIRE_SHA: 1/).to_stdout
+      .and not_to_output.to_stderr
+      .and be_a_success
+  end
 end

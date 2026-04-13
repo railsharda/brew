@@ -27,4 +27,12 @@ RSpec.describe Homebrew::Cmd::FetchCmd do
     expect(HOMEBREW_CACHE/"testball2--0.1.tbz").to be_a_symlink
     expect(HOMEBREW_CACHE/"testball2--0.1.tbz").to exist
   end
+
+  it "fails before downloading a cask when HOMEBREW_CASK_OPTS_REQUIRE_SHA is set", :integration_test do
+    expect do
+      brew "fetch", "--cask", cask_path("no-checksum"), "HOMEBREW_CASK_OPTS_REQUIRE_SHA" => "1"
+    end.to output(/--require-sha/).to_stderr
+                                  .and not_to_output(/Downloading/).to_stdout
+                                                                   .and be_a_failure
+  end
 end
