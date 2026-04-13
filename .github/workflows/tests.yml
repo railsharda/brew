@@ -65,19 +65,34 @@ jobs:
 
       - run: brew typecheck
 
-      - name: Check RuboCop filepaths
+      - name: Check Style/Documentation includes all public API files
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/Library/Homebrew
         run: |
-          public_apis="$(git grep -l "@api public" -- :^sorbet/ :^vendor/ | sort)"
+          # Find source files with real @api public YARD annotations.
+          # Exclude rubocops/test (string literals, not APIs) and .rubocop.yml.
+          public_apis="$(git grep -l "@api public" \
+            -- :^sorbet/ :^vendor/ :^rubocops/ :^test/ :^.rubocop.yml | sort)"
           rubocop_docs="$(yq '.Style/Documentation.Include[]' .rubocop.yml | sort)"
 
           if [[ "${public_apis}" != "${rubocop_docs}" ]]; then
-            echo "All public Homebrew APIs should be included in the \`Style/Documentation\` RuboCop."
-            echo "Add/remove the following paths from \`Library/Homebrew/.rubocop.yml\` as appropriate:"
-            echo "${public_apis} ${rubocop_docs}" | tr ' ' '\n' | sort | uniq -u
-
+            added="$(comm -23 <(echo "${public_apis}") <(echo "${rubocop_docs}"))"
+            removed="$(comm -13 <(echo "${public_apis}") <(echo "${rubocop_docs}"))"
+            echo "::error::Style/Documentation Include list is out of sync with @api public files."
+            if [[ -n "${added}" ]]; then
+              echo "Files with @api public missing from Style/Documentation.Include:"
+              while IFS= read -r f; do echo "  ${f}"; done <<< "${added}"
+            fi
+            if [[ -n "${removed}" ]]; then
+              echo "Files in Style/Documentation.Include that no longer contain @api public:"
+              while IFS= read -r f; do echo "  ${f}"; done <<< "${removed}"
+            fi
+            echo "Update Library/Homebrew/.rubocop.yml accordingly."
             exit 1
           fi
+
+      - name: Check cookbook method lists match source annotations
+        working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
+        run: ruby .github/check_cookbook_method_lists.rb
 
   tap-syntax:
     name: tap syntax
