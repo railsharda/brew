@@ -1,0 +1,64 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for brew
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a feature! Please fill out the form below.
+        Before submitting, please search existing issues to avoid duplicates.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: A clear and concise description of the feature you'd like to see.
+      placeholder: Describe the feature...
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation / Use Case
+      description: Why would this feature be useful? What problem does it solve?
+      placeholder: Explain why this feature would be valuable...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed Solution
+      description: If you have ideas on how this could be implemented, share them here.
+      placeholder: Describe your proposed solution (optional)...
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative approaches or workarounds?
+      placeholder: Describe any alternatives you've considered...
+    validations:
+      required: false
+
+  - type: input
+    id: brew_version
+    attributes:
+      label: Brew Version
+      description: What version of brew are you using? Run `brew --version`.
+      placeholder: e.g. Homebrew 4.x.x
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched existing issues and this is not a duplicate.
+          required: true
+        - label: I have read the contributing guidelines.
+          required: false
